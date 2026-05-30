@@ -1,4 +1,4 @@
-# Predicting survival of Patients with Heart Failure
+# Predicting the survival of Patients with Heart Failure
 
 ## Project Overview
 Heart failure is a serious condition that affects millions worldwide. It occurs when the heart can’t pump blood effectively, leading to symptoms like fatigue, breathlessness, and fluid buildup. While the prognosis can vary greatly, certain clinical factors can help predict a patient's risk of survival. This project uses machine learning to analyze these factors and improve the accuracy of these predictions.
