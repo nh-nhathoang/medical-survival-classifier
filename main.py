@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split, KFold, GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
-from sklearn.metrics import log_loss, roc_auc_score, f1_score, recall_score
+from sklearn.metrics import confusion_matrix, log_loss, roc_auc_score, f1_score, recall_score, roc_curve
 from sklearn.preprocessing import StandardScaler
 
 
@@ -88,6 +88,8 @@ def test_metrics(model):
     proba = model.predict_proba(X_test)
     y_pred = model.predict(X_test)
     return {
+        'proba':       proba[:, 1],   
+        'y_pred':      y_pred,        
         'test_loss':   log_loss(y_test, proba),
         'test_auc':    roc_auc_score(y_test, proba[:, 1]),
         'test_f1':     f1_score(y_test, y_pred),
@@ -97,6 +99,35 @@ def test_metrics(model):
 lr_test  = test_metrics(lr_model)
 svc_test = test_metrics(svc_model)
 
+#confusion matrices
+fig, axes = plt.subplots(1, 2, figsize=(10, 4))
+for ax, (name, res) in zip(axes, [('Logistic Regression', lr_test), ('SVC', svc_test)]):
+    cm = confusion_matrix(y_test, res['y_pred'])
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax,
+                xticklabels=['Survived', 'Deceased'],
+                yticklabels=['Survived', 'Deceased'])
+    ax.set_title(f'{name}\nConfusion Matrix')
+    ax.set_ylabel('True Label')
+    ax.set_xlabel('Predicted Label')
+plt.tight_layout()
+plt.savefig('confusion_matrices.png', dpi=300)
+plt.close()
+print("Saved: confusion_matrices.png")
+
+# ROC curves
+plt.figure(figsize=(7, 6))
+for name, res, color in [('Logistic Regression', lr_test, 'steelblue'), ('SVC', svc_test, 'tomato')]:
+    fpr, tpr, _ = roc_curve(y_test, res['proba'])
+    plt.plot(fpr, tpr, color=color, lw=2, label=f"{name} (AUC = {res['test_auc']:.3f})")
+plt.plot([0, 1], [0, 1], 'k--', lw=1, label='Random classifier')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve')
+plt.legend(loc='lower right')
+plt.tight_layout()
+plt.savefig('roc_curve.png', dpi=300)
+plt.close()
+print("Saved: roc_curve.png")
 
 # print results
 def avg(lst): return np.mean(lst)
