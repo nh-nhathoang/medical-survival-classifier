@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split, KFold, GridSearchCV
+from sklearn.model_selection import train_test_split, StratifiedKFold, GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix, log_loss, roc_auc_score, f1_score, recall_score, roc_curve
@@ -56,14 +56,14 @@ svc_model = GridSearchCV(SVC(probability=True, class_weight='balanced'), svc_par
 
 
 # 4-fold cross-validation
-kf = KFold(n_splits=4, shuffle=True, random_state=42)
+kf = StratifiedKFold(n_splits=4, shuffle=True, random_state=42)
 
 results = {
     'lr':  {'train_loss': [], 'val_loss': [], 'auc': [], 'f1': [], 'recall': []},
     'svc': {'train_loss': [], 'val_loss': [], 'auc': [], 'f1': [], 'recall': []},
 }
 
-for train_idx, val_idx in kf.split(X_train_val):
+for train_idx, val_idx in kf.split(X_train_val, y_train_val):
     X_train, X_val = X_train_val[train_idx], X_train_val[val_idx]
     y_train, y_val = y_train_val.iloc[train_idx], y_train_val.iloc[val_idx]
 

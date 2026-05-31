@@ -8,7 +8,7 @@ This project applies machine learning to predict survival in patients with heart
 ## Problem Setup
 Our goal is to predict whether a patient with heart failure will survive. This is a **binary classification task**:
 - **Labels**: 0 = survived, 1 = deceased
-- **Features**: Clinical variables like age, blood pressure, and ejection fraction (percentage of blood leaving the heart per contraction).
+- **Features**: Clinical variables, such as age, blood pressure, and ejection fraction (percentage of blood leaving the heart per contraction).
   
 ## Dataset
 
@@ -22,6 +22,11 @@ We evaluate two primary models:
 
 We split the data into 80% for training/validation and 20% for testing. For model validation, we use 4-fold cross-validation to avoid overfitting and get a more accurate performance assessment.
 
+## Evaluation
+- **Recall**: most critical in the medical because it minimizes false negatives
+- **F1 score**: balances recall against precision
+- **AUC-ROC**: threshold-free measure of ranking ability
+
 ## Setup
 
 ```bash
@@ -34,4 +39,4 @@ python main.py
 
 ## Results
 
-Both models have similar AUC but LR generalizes better on the minority class (deceased), likely because SVC overfits on the small dataset. Accuracy is not reported — misleading on imbalanced data.
+Both models achieve similar AUC-ROC (0.89), but Logistic Regression generalizes better to the minority class (deceased), with higher test recall (0.684 vs 0.579) and F1 (0.684 vs 0.629). SVC might overfit the small dataset, because it produces good probabilities but a suboptimal decision boundary. LR is preferred for this task.
