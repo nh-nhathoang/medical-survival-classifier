@@ -13,7 +13,6 @@ data = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
 
 # scale continuous features
 continuous = ['age', 'ejection_fraction', 'platelets', 'serum_creatinine', 'serum_sodium', 'creatinine_phosphokinase', 'time']
-data[continuous] = StandardScaler().fit_transform(data[continuous])
 
 print(data.info())
 print(f"\nClass distribution:\n{data['DEATH_EVENT'].value_counts()}")
@@ -36,11 +35,14 @@ y = data['DEATH_EVENT']
 
 X_train_val, X_test, y_train_val, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
+scaler = StandardScaler()
+X_train_val = scaler.fit_transform(X_train_val)  # scale only on training data
+X_test = scaler.transform(X_test)                # apply the same scaler to test
 
 # hyperparameter search: use AUC, not accuracy, because the data is imbalanced
 lr_params = [
-    {'C': [0.01, 0.1, 1, 10, 100], 'penalty': ['l2'], 'solver': ['lbfgs', 'saga']},
-    {'C': [0.01, 0.1, 1, 10, 100], 'penalty': ['l1'], 'solver': ['liblinear', 'saga']},
+    {'C': [0.01, 0.1, 1, 10, 100], 'penalty': ['l2'], 'solver': ['lbfgs']},
+    {'C': [0.01, 0.1, 1, 10, 100], 'penalty': ['l1'], 'solver': ['liblinear']},
 ]
 lr_model = GridSearchCV(LogisticRegression(max_iter=1000, class_weight='balanced'), lr_params,
                         cv=5, scoring='roc_auc').fit(X_train_val, y_train_val).best_estimator_
@@ -62,7 +64,7 @@ results = {
 }
 
 for train_idx, val_idx in kf.split(X_train_val):
-    X_train, X_val = X_train_val.iloc[train_idx], X_train_val.iloc[val_idx]
+    X_train, X_val = X_train_val[train_idx], X_train_val[val_idx]
     y_train, y_val = y_train_val.iloc[train_idx], y_train_val.iloc[val_idx]
 
     for name, model in [('lr', lr_model), ('svc', svc_model)]:
