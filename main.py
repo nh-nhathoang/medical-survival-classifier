@@ -7,18 +7,17 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix, log_loss, roc_auc_score, f1_score, recall_score, roc_curve
 from sklearn.preprocessing import StandardScaler
+from ucimlrepo import fetch_ucirepo
 
-
-data = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
-
-# scale continuous features
-continuous = ['age', 'ejection_fraction', 'platelets', 'serum_creatinine', 'serum_sodium', 'creatinine_phosphokinase', 'time']
-
-print(data.info())
-print(f"\nClass distribution:\n{data['DEATH_EVENT'].value_counts()}")
-
+# data loaded via UCI API (see fetch_ucirepo below)
+# if you want to load from local CSV instead, uncomment below and comment out the fetch_ucirepo line
+# data = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
+heart_failure = fetch_ucirepo(id=519)
 
 # correlation heatmap
+data = heart_failure.data.features.copy().join(heart_failure.data.targets)
+print(data.info())
+
 plt.figure(figsize=(10, 8))
 sns.heatmap(data.corr(), annot=True, fmt=".2f", cmap='coolwarm',
             square=True, cbar_kws={'shrink': 0.75})
@@ -27,11 +26,9 @@ plt.tight_layout()
 plt.savefig('correlation_matrix.png', dpi=300)
 plt.close()
 
-
-# keep only features most correlated with the target
-features = ['age', 'ejection_fraction', 'serum_creatinine', 'serum_sodium', 'time']
-X = data[features]
-y = data['DEATH_EVENT']
+# keep only 5 features most correlated with the target
+X = heart_failure.data.features[['age', 'ejection_fraction', 'serum_creatinine', 'serum_sodium', 'time']]
+y = heart_failure.data.targets.squeeze() 
 
 X_train_val, X_test, y_train_val, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 

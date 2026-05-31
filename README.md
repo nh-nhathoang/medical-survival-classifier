@@ -30,7 +30,7 @@ We split the data into 80% for training/validation and 20% for testing. For mode
 ## Setup
 
 ```bash
-pip install pandas numpy scikit-learn seaborn matplotlib
+pip install pandas numpy scikit-learn seaborn matplotlib ucimlrepo
 ```
 
 ```bash
