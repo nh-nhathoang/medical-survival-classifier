@@ -39,4 +39,10 @@ python main.py
 
 ## Results
 
-Both models achieve similar AUC-ROC (0.89), but Logistic Regression generalizes better to the minority class (deceased), with higher test recall (0.684 vs 0.579) and F1 (0.684 vs 0.629). SVC might overfit the small dataset, because it produces good probabilities but a suboptimal decision boundary. LR is preferred for this task.
+Both models achieve similar AUC-ROC (0.89), but Logistic Regression generalizes better to the minority class (deceased), with higher test recall (0.684 vs 0.579) and F1 (0.684 vs 0.629). SVC might overfit the small dataset, because it produces good probabilities but a suboptimal decision boundary. 
+
+LR is the preferred model for this task for two reasons. First, it outperforms SVC on the metrics that matter most clinically, including recall and F1 on the deceased class. Second, unlike SVC with a non-linear kernel, LR always provides a clean explanation of what drives each prediction via its coefficients. In medical, it is important to understand why a patient is flagged as high risk.
+
+The LR coefficient plot confirms the model learned meaningful patterns: `serum_creatinine` and `ejection_fraction` are the strong predictors. 
+
+`time` is the most influential feature in the model, representing the number of days a patient was monitored after their heart failure diagnosis. While it cannot be used to predict outcomes for a new patient arriving at the hospital, since no follow-up has occurred yet. This sugguests that patients who remained under medical supervision longer survived longer.

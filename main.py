@@ -139,3 +139,12 @@ print(f"{'Test Log Loss':<30}{lr_test['test_loss']:<22.4f}{svc_test['test_loss']
 print(f"{'Test AUC-ROC':<30}{lr_test['test_auc']:<22.4f}{svc_test['test_auc']:.4f}")
 print(f"{'Test F1 (deceased)':<30}{lr_test['test_f1']:<22.4f}{svc_test['test_f1']:.4f}")
 print(f"{'Test Recall (deceased)':<30}{lr_test['test_recall']:<22.4f}{svc_test['test_recall']:.4f}")
+
+coefficients = pd.Series(lr_model.coef_[0], index=['age', 'ejection_fraction', 'serum_creatinine', 'serum_sodium', 'time'])
+coefficients.sort_values().plot(kind='barh', color=['tomato' if c > 0 else 'steelblue' for c in coefficients.sort_values()])
+plt.axvline(0, color='black', linewidth=0.8)
+plt.title('Logistic Regression Feature Coefficients')
+plt.xlabel('Coefficient value')
+plt.tight_layout()
+plt.savefig('lr_coefficients.png', dpi=300)
+plt.close()
