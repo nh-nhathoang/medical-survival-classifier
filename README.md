@@ -45,4 +45,4 @@ LR is the preferred model for this task for two reasons. First, it outperforms S
 
 The LR coefficient plot confirms the model learned meaningful patterns: `serum_creatinine` and `ejection_fraction` are the strong predictors. 
 
-`time` is the most influential feature in the model, representing the number of days a patient was monitored after their heart failure diagnosis. While it cannot be used to predict outcomes for a new patient arriving at the hospital, since no follow-up has occurred yet. This sugguests that patients who remained under medical supervision longer survived longer.
+`time`, which is follow-up time, is highly correlated but it is a consequence of the target, not the cause. Therefore, it need to be removed.

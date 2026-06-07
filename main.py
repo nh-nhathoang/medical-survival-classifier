@@ -14,23 +14,31 @@ from ucimlrepo import fetch_ucirepo
 # data = pd.read_csv('data/heart_failure_clinical_records_dataset.csv')
 heart_failure = fetch_ucirepo(id=519)
 
-# correlation heatmap
 data = heart_failure.data.features.copy().join(heart_failure.data.targets)
 print(data.info())
 
+X_raw = heart_failure.data.features
+y = heart_failure.data.targets.squeeze()
+
+X_train_raw, X_test_raw, y_train_val, y_test = train_test_split(X_raw, y, test_size=0.2, random_state=42, stratify=y)
+
+# correlation heatmap to check for multicollinearity and feature importance
+train_data = X_train_raw.copy().join(y_train_val)
+train_correlation = train_data.corr()
+
 plt.figure(figsize=(10, 8))
-sns.heatmap(data.corr(), annot=True, fmt=".2f", cmap='coolwarm',
+sns.heatmap(train_correlation, annot=True, fmt=".2f", cmap='coolwarm',
             square=True, cbar_kws={'shrink': 0.75})
 plt.title('Correlation Matrix of Heart Failure Clinical Records')
 plt.tight_layout()
 plt.savefig('correlation_matrix.png', dpi=300)
 plt.close()
 
-# keep only 5 features most correlated with the target
-X = heart_failure.data.features[['age', 'ejection_fraction', 'serum_creatinine', 'serum_sodium', 'time']]
-y = heart_failure.data.targets.squeeze() 
+# keep only features most correlated with the target
+features = ['age', 'ejection_fraction', 'serum_creatinine', 'serum_sodium', 'high_blood_pressure']
 
-X_train_val, X_test, y_train_val, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+X_train_val = X_train_raw[features]
+X_test = X_test_raw[features]
 
 scaler = StandardScaler()
 X_train_val = scaler.fit_transform(X_train_val)  # scale only on training data
@@ -140,7 +148,7 @@ print(f"{'Test AUC-ROC':<30}{lr_test['test_auc']:<22.4f}{svc_test['test_auc']:.4
 print(f"{'Test F1 (deceased)':<30}{lr_test['test_f1']:<22.4f}{svc_test['test_f1']:.4f}")
 print(f"{'Test Recall (deceased)':<30}{lr_test['test_recall']:<22.4f}{svc_test['test_recall']:.4f}")
 
-coefficients = pd.Series(lr_model.coef_[0], index=['age', 'ejection_fraction', 'serum_creatinine', 'serum_sodium', 'time'])
+coefficients = pd.Series(lr_model.coef_[0], index=['age', 'ejection_fraction', 'serum_creatinine', 'serum_sodium', 'high_blood_pressure'])
 coefficients.sort_values().plot(kind='barh', color=['tomato' if c > 0 else 'steelblue' for c in coefficients.sort_values()])
 plt.axvline(0, color='black', linewidth=0.8)
 plt.title('Logistic Regression Feature Coefficients')
