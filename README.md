@@ -39,10 +39,8 @@ python main.py
 
 ## Results
 
-Both models achieve similar AUC-ROC (0.89), but Logistic Regression generalizes better to the minority class (deceased), with higher test recall (0.684 vs 0.579) and F1 (0.684 vs 0.629). SVC might overfit the small dataset, because it produces good probabilities but a suboptimal decision boundary. 
+False Positive (FP): Predict survival, but the patient actually dies. This is a patient who is incorrectly classified as low risk. This is usually the more dangerous error, because the patient may not receive the intensive monitoring or treatment they need.
 
-LR is the preferred model for this task for two reasons. First, it outperforms SVC on the metrics that matter most clinically, including recall and F1 on the deceased class. Second, unlike SVC with a non-linear kernel, LR always provides a clean explanation of what drives each prediction via its coefficients. In medical, it is important to understand why a patient is flagged as high risk.
+Both models achieve similar AUC-ROC (0.75). LR is the preferred model for this task for two reasons. First, it outperforms SVC on the metrics that matter most clinically, including recall and F1 on the deceased class. Second, unlike SVC with a non-linear kernel, LR always provides a clean explanation of what drives each prediction via its coefficients. In medical, it is important to understand why a patient is flagged as high risk.
 
-The LR coefficient plot confirms the model learned meaningful patterns: `serum_creatinine` and `ejection_fraction` are the strong predictors. 
-
-`time`, which is follow-up time, is highly correlated but it is a consequence of the target, not the cause. Therefore, it need to be removed.
+The LR coefficient plot confirms the model learned meaningful patterns: `serum_creatinine` and `ejection_fraction` are the strong predictors. `time`, which is follow-up time, is highly correlated but it is a consequence of the target, not the cause. Therefore, it need to be removed.
